@@ -1,18 +1,13 @@
-import { SwapSDK } from "@chainflip/sdk/swap";
+import { ChainflipSDK } from "../providers/chainflip.js";
 
-export async function GET(request) {
-    const sdk = new SwapSDK();
-    const assets = await sdk.getAssets()
-    const network = "mainnet";
-    const body = {
-        assets,
-        network
+export async function GET(req){
+    const url = new URL(req.url);
+    const request = {
+        from: url.searchParams.get("from"),
+        to: url.searchParams.get("to"),
+        amount: url.searchParams.get("amount"),
     }
+    const quote = await ChainflipSDK.quote("mainnet", request);
 
-    return new Response(JSON.stringify(body),  {
-		status: 200,
-		headers: {
-			'content-type': 'application/json'
-		}
-	});
+    return Response.json(quote);
 }
