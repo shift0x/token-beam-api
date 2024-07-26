@@ -1,4 +1,5 @@
 import { Assets, Chains, SwapSDK } from "@chainflip/sdk/swap";
+import { makeError, makeSuccess } from "../utils/response.js";
 
 const ERROR_UNKNOWN_NETWORK = "unknown_network"
 const ERROR_UNKNOWN_TOKEN = "unknown_token"
@@ -43,27 +44,21 @@ function getAssetsFrom(waypoint){
     return { network, asset, error };
 }
 
-function formatQuoteResponse(request, response){
-    return {
-        request: request,
-        quote: {
-            amountIn: response.amount,
-            amountOut: response.quote.egressAmount,
-            lowLiquidity: response.quote.lowLiquidityWarning,
-            estimatedDurationSeconds: response.quote.estimatedDurationSeconds
-        }
-    }
+function formatQuoteResponse(response){
+    return makeSuccess({
+        amountIn: response.amount,
+        amountOut: response.quote.egressAmount,
+        lowLiquidity: response.quote.lowLiquidityWarning,
+        estimatedDurationSeconds: response.quote.estimatedDurationSeconds
+    })
 }
 
-async function quote(network, request){
+async function getPrice(request){
     const fromAsset = getAssetsFrom(request.from);
     const toAsset = getAssetsFrom(request.to);
 
     if(fromAsset.error || toAsset.error) {
-        return { 
-            request: request,
-            error: fromAsset.error ?? toAsset.error 
-        }
+        return makeError(fromAsset.error ?? toAsset.error)
     }
 
     const quoteRequest = {
@@ -74,18 +69,16 @@ async function quote(network, request){
         amount: request.amount
     };
 
-    const swapSDK = makeSDK(network ?? "mainnet");
+    const swapSDK = makeSDK(request.network ?? "mainnet");
     
     return swapSDK.getQuote(quoteRequest)
-        .then(res => { return formatQuoteResponse(request, res); })
+        .then(res => { return formatQuoteResponse(res); })
         .catch(err => {
-            return {
-                request: request,
-                error: err.response.data.message
-            }
+            return makeError(err.response.data.message);
         })
 }
 
-export const ChainflipSDK = {
-    quote
+
+export const ChainFlipProvider = {
+    getPrice
 }

@@ -1,0 +1,78 @@
+{
+    "bitcoin": {
+        "name": "bitcoin",
+        "chainId": "bitcoin",
+        "icon": "https://assets.coingecko.com/coins/images/1/standard/bitcoin.png?1696501400",
+        "providers": ["thorchain", "chainflip"],
+        "native": {
+            "id": "BTC.BTC",
+            "decimals": 8
+        }
+    },
+    "arbitrum-one": { 
+        "name": "arbitrum", 
+        "chainId": "42161",
+        "icon": "https://coin-images.coingecko.com/coins/images/16547/large/photo_2023-03-29_21.47.00.jpeg?1696516109",
+        "type": "evm",
+        "providers": ["thorchain", "chainflip", "0x", "tokenbeam"],
+        "native": {
+            "id": "ARB.ETH",
+            "decimals": 18
+        }
+    },
+    "avalanche": {
+        "name": "avalanche",
+        "chainId": "43114",
+        "icon": "https://assets.coingecko.com/coins/images/12559/standard/Avalanche_Circle_RedWhite_Trans.png",
+        "type": "evm",
+        "providers": ["thorchain", "0x"],
+        "native": {
+            "id": "AVAX.AVAX",
+            "decimals": 18
+        }
+    },
+    "binance-smart-chain": {
+        "name": "binance smart chain",
+        "chainId": "56",
+        "icon": "https://assets.coingecko.com/coins/images/825/standard/bnb-icon2_2x.png",
+        "type": "evm",
+        "providers": ["thorchain", "0x"],
+        "native": {
+            "id": "BSC.BNB",
+            "decimals": 18
+        }
+    },
+    "ethereum": {
+        "name": "ethereum",
+        "chainId": "1",
+        "icon": "https://assets.coingecko.com/coins/images/279/standard/ethereum.png",
+        "type": "evm",
+        "providers": ["thorchain", "chainflip", "0x"],
+        "native": {
+            "id": "ETH.ETH",
+            "decimals": 18
+        }
+    },
+    "ethereum-sepolia": {
+        "name": "ethereum-sepolia",
+        "icon": "https://assets.coingecko.com/coins/images/279/standard/ethereum.png",
+        "testnet": true,
+        "type": "evm",
+        "providers": ["chainflip", "0x"],
+        "native": {
+            "id": "ETH.ETH",
+            "decimals": 18
+        }
+    },
+    "arbitrum-sepolia": {
+        "name": "arbitrum-sepolia",
+        "icon": "https://coin-images.coingecko.com/coins/images/16547/large/photo_2023-03-29_21.47.00.jpeg?1696516109",
+        "testnet": true,
+        "type": "evm",
+        "providers": ["chainflip", "0x"],
+        "native": {
+            "id": "ARB.ETH",
+            "decimals": 18
+        }
+    }
+}
