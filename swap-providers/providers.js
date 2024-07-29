@@ -20,7 +20,7 @@ export async function execute(request){
     if(!provider){ return makeError(ERROR_UNDEFINED_PROVIDER)}
     if(!method){ return makeError(ERROR_UNDEFINED_METHOD)}
 
-    const handler = providers[request.provider];
+    const handler = providers[provider];
 
     if(!handler){ return makeError(ERROR_PROVIDER_NOT_FOUND(provider)) };
     if(!handler[method]){ return makeError(ERROR_METHOD_NOT_FOUND(provider, method))}
