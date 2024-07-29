@@ -1,8 +1,9 @@
 import { Assets, Chains, SwapSDK } from "@chainflip/sdk/swap";
 import { makeError, makeSuccess } from "../utils/response.js";
 
-const ERROR_UNKNOWN_NETWORK = "unknown_network"
-const ERROR_UNKNOWN_TOKEN = "unknown_token"
+const ERROR_UNKNOWN_NETWORK = "unknown network"
+const ERROR_UNKNOWN_TOKEN = "unknown token"
+const ERROR_UNDEFINED_DESTINATION_ADDRESS = "destinationAddress is required"
 
 const mappings = {
     networks: {
@@ -53,7 +54,17 @@ function formatQuoteResponse(response){
     })
 }
 
-async function getPrice(request){
+function formatDepositAddressResponse(response){
+    const model = JSON.parse(JSON.stringify(response, (key, value) =>
+        typeof value === 'bigint'
+            ? value.toString()
+            : value // return everything else unchanged
+    ));
+
+    return makeSuccess(model);
+}
+
+function makeQuoteRequest(request) {
     const fromAsset = getAssetsFrom(request.from);
     const toAsset = getAssetsFrom(request.to);
 
@@ -61,13 +72,17 @@ async function getPrice(request){
         return makeError(fromAsset.error ?? toAsset.error)
     }
 
-    const quoteRequest = {
+    return {
         srcChain: fromAsset.network,
         destChain: toAsset.network,
         srcAsset: fromAsset.asset,
         destAsset: toAsset.asset,
         amount: request.amount
     };
+}
+
+async function getPrice(request){
+    const quoteRequest = makeQuoteRequest(request);
 
     const swapSDK = makeSDK(request.network ?? "mainnet");
     
@@ -78,7 +93,30 @@ async function getPrice(request){
         })
 }
 
+async function getDepositAddress(request){
+    if(!request.destinationAddress){ return makeError(ERROR_UNDEFINED_DESTINATION_ADDRESS); }
+    
+    const depositAddressRequest = makeQuoteRequest(request);
+
+    depositAddressRequest.destAddress = request.destinationAddress;
+
+    const isCrosschainMessage = request.message && request.gasBudget;
+
+    if(isCrosschainMessage){
+        const ccmMetadata = {message: request.message, gasBudget: request.gasBudget};
+
+        depositAddressRequest.ccmMetadata = ccmMetadata
+    }
+
+    const swapSDK = makeSDK(request.network ?? "mainnet");
+
+    return swapSDK.requestDepositAddress(depositAddressRequest)
+        .then(res => { return formatDepositAddressResponse(res); })
+        .catch(err => { return makeError(err.meta); })
+}
+
 
 export const ChainFlipProvider = {
-    getPrice
+    getPrice,
+    getDepositAddress
 }
